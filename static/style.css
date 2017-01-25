@@ -1,4 +1,8 @@
-/* Login */
-body {
+* {
     text-align: center;
+}
+
+a:hover, a:link, a:visited, a:active {
+    text-decoration: none;
+    color: black;
 }

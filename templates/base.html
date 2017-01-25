@@ -2,12 +2,17 @@
 <html>
   <head>
     <title>Blog</title>
-    <link type="text/css" rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
   </head>
   <body>
-    <a href="/login"><button class="login-btn">Login</button></a>
-    <a href="/signup"><button class="signup-btn">Sign Up</button></a>
-    <a href="/" class="main-title">Danny's Blog</a>
+    <div class="col-md-12 title">
+      <a href="/" class="main-title"><h1>Danny's Blog</h1></a>
+    </div>
+    <div class="buttons">
+      <a href="/login"><button class="login-btn">Login</button></a>
+      <a href="/signup"><button class="signup-btn">Sign Up</button></a>
+      <a href="/logout"><button class="logout-btn">Logout</button></a>
+    </div>
     <div id="content">
       {% block content %}
       {% endblock %}
