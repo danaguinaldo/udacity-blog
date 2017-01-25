@@ -2,15 +2,15 @@
 <html>
     <head>
         <link type="text/css" rel="stylesheet" href="/static/style.css"/>
-        <title>Sign Up</title>
+        <title>Login</title>
     </head>
-    <body>
-        <h2>Sign Up</h2>
-        <form method="post">
+    <body class='login'>
+        <h2>Login</h2>
+        <form method="POST">
             <table>
                 <tr>
                     <td class="label">
-                        Username
+                        Username:
                     </td>
                     <td>
                         <input type="text" name="username" value="{{username}}">
@@ -28,28 +28,6 @@
                     </td>
                     <td class="error">
                         {{error_password}}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="label">
-                        Verify Password
-                    </td>
-                    <td>
-                        <input type="password" name="verify" value="">
-                    </td>
-                    <td class="error">
-                        {{error_verify}}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="label">
-                        Email (optional)
-                    </td>
-                    <td>
-                        <input type="text" name="email" value="{{email}}">
-                    </td>
-                    <td class="error">
-                        {{error_email}}
                     </td>
                 </tr>
             </table>
