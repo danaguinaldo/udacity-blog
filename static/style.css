@@ -1,8 +1,56 @@
-* {
+.title, .buttons {
     text-align: center;
 }
 
 a:hover, a:link, a:visited, a:active {
     text-decoration: none;
     color: black;
+}
+
+.post {
+    border: 1px solid slategray;
+    padding-top: 5px;
+    padding-bottom: 15px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.post hr {
+    width: 80%;
+}
+
+.post-heading {
+    padding: 5px 5% 5px 5%;
+}
+
+.post-content {
+    text-align: center;
+}
+
+.post-author {
+    text-align: right;
+    padding-right: 10%;
+}
+
+.input-field {
+    outline: 1px solid darkgray;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.new-post .input-field {
+    margin: 0;
+}
+
+.new-post-content , .new-post-title {
+    width: 400px;
+}
+
+.new-post-content {
+    height: 80px;
+}
+
+.login {
+    width: 50%;
+    margin: auto auto;
 }

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link type="text/css" rel="stylesheet" href="/static/style.css"/>
+        <link rel="stylesheet" href="/static/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/style.css">
         <title>Login</title>
     </head>
     <body class='login'>
@@ -9,29 +10,29 @@
         <form method="POST">
             <table>
                 <tr>
-                    <td class="label">
+                    <td>
                         Username:
                     </td>
                     <td>
-                        <input type="text" name="username" value="{{username}}">
+                        <input class="input-field" type="text" name="username" value="{{username}}">
                     </td>
                     <td class="error">
                         {{error_username}}
                     </td>
                 </tr>
                 <tr>
-                    <td class="label">
-                        Password
+                    <td>
+                        Password:
                     </td>
                     <td>
-                        <input type="password" name="password" value="">
+                        <input class="input-field" type="password" name="password" value="">
                     </td>
                     <td class="error">
                         {{error_password}}
                     </td>
                 </tr>
             </table>
-            <input type="submit">
+            <button class="btn btn-primary" type="submit"> Log In </button>
         </form>
     </body>
 </html>
