@@ -15,4 +15,4 @@
 2. Click _file_ -> _Add existing application..._
 3. Navigate to where the project is located
 4. Start app Engine
-5. Click browse on Google App Engine
+5. Click _browse_ on Google App Engine
