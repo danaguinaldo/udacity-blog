@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <link rel="stylesheet" href="/static/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/style.css">
-        <title>Login</title>
-    </head>
-    <body class='login'>
+{% extends "base.html" %}
+{% block content %}
         <h2>Login</h2>
-        <form method="POST">
+        <form method="POST" id="login-form">
             <table>
                 <tr>
                     <td>
@@ -32,7 +26,6 @@
                     </td>
                 </tr>
             </table>
-            <button class="btn btn-primary" type="submit"> Log In </button>
         </form>
-    </body>
-</html>
+        <button class="btn btn-primary" type="submit" form="login-form"> Log In </button>
+{% endblock %}

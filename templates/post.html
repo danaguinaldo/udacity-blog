@@ -1,18 +1,20 @@
-<div class="post">
-  <div class="post-heading">
-    <div class="post-title col-xs-6 col-sm-6 col-md-10 col-lg-10">
-      {{p.subject}}
+<a href="/blog/{{p.link}}">
+  <div class="post">
+    <div class="post-heading">
+      <div class="post-title col-xs-6 col-sm-6 col-md-10 col-lg-10">
+        {{p.subject}}
+      </div>
+      <div class="post-date col-xs-6 col-sm-6 col-md-2 col-lg-2">
+        {{p.created.strftime("%b %d, %Y")}}
+      </div>
     </div>
-    <div class="post-date col-xs-6 col-sm-6 col-md-2 col-lg-2">
-      {{p.created.strftime("%b %d, %Y")}}
+    <hr>
+    <div class="post-content">
+      {{p._render_text | safe}}
+    </div>
+    <hr>
+    <div class="post-author">
+      - {{p.author}}
     </div>
   </div>
-  <hr>
-  <div class="post-content">
-    {{p._render_text | safe}}
-  </div>
-  <hr>
-  <div class="post-author">
-    - {{p.author}}
-  </div>
-</div>
+</a>

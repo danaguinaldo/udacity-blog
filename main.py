@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import os 
+import os
 import webapp2
 import jinja2
 import re
@@ -26,16 +26,24 @@ from string import letters
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
+jinja_env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(template_dir),
+    autoescape=True)
+
+html_values = dict(display_login="", display_signup="", display_logout="")
 
 # GLOBAL FUNCTIONS
 # Hashing Values
 SECRET = "dannyisthebest"
+
+
 def hash_str(s):
     return hmac.new(SECRET, s).hexdigest()
 
+
 def make_secure_val(s):
     return "%s|%s" % (s, hash_str(s))
+
 
 def check_secure_val(h):
     val = h.split('|')[0]
@@ -43,34 +51,44 @@ def check_secure_val(h):
         return val
 
 # Hashing password to be more secure
-def make_salt(length = 5):
+
+
+def make_salt(length=5):
     return ''.join(random.choice(letters) for x in xrange(length))
 
-def make_pw_hash(name, pw, salt = None):
+
+def make_pw_hash(name, pw, salt=None):
     if not salt:
         salt = make_salt()
     h = hashlib.sha256(name + pw + salt).hexdigest()
     return '%s,%s' % (salt, h)
 
+
 def valid_pw(name, password, h):
     salt = h.split(',')[0]
     return h == make_pw_hash(name, password, salt)
 
-def render_str(template, **params):
+
+def render_str(template, **html_values):
     t = jinja_env.get_template(template)
-    return t.render(params)
+    return t.render(html_values)
+
 
 def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
 # Validation for User sign up info
+
+
 def validate_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
     return username and USER_RE.match(username)
 
+
 def validate_password(password):
     PASSWORD_RE = re.compile(r"^.{3,20}$")
     return password and PASSWORD_RE.match(password)
+
 
 def validate_email(email):
     EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
@@ -78,6 +96,8 @@ def validate_email(email):
 
 # DATABASE
 # Key to find users
+
+
 def users_key(group = 'default'):
     return db.Key.from_path('users', group)
 
@@ -118,6 +138,8 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
     author = db.StringProperty()
+    link = db.StringProperty()
+    can_edit = db.StringProperty()
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
@@ -128,9 +150,9 @@ class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
-    def render_str(self, template, **params):
+    def render_str(self, template, **html_values):
         t = jinja_env.get_template(template)
-        return t.render(params)
+        return t.render(html_values)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
@@ -158,12 +180,28 @@ class Handler(webapp2.RequestHandler):
 class MainPage(Handler):
     def get(self):
         posts = db.GqlQuery("select * from Post order by created desc limit 10")
-        self.render('blog.html', posts = posts)
+
+        if self.user:
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = "hide_button"
+            html_values['display_logout'] = ""
+        else:
+            html_values['display_login'] = ""
+            html_values['display_signup'] = ""
+            html_values['display_logout'] = "hide_button"
+
+        self.render('blog.html', posts = posts, **html_values)
 
 # Posting a new blog
 class NewPost(Handler):
     def get(self):
-        self.render("new_post.html")
+        if self.user:
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = "hide_button"
+            html_values['display_logout'] = ""
+            self.render("new_post.html", **html_values)
+        else:
+            self.redirect('/signup')
 
     def post(self):
         subject = self.request.get('subject')
@@ -174,7 +212,9 @@ class NewPost(Handler):
             username = "Anonymous"
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content, author = username)
+            p = Post(parent=blog_key(), subject=subject, content=content, author=username, can_edit=username)
+            p.put()
+            p.link = str(p.key().id())
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -196,7 +236,13 @@ class PostPage(Handler):
 # Page to register
 class SignUpPage(Handler):
     def get(self):
-        self.render("signup.html")
+        if self.user:
+            self.redirect('/')
+        else:
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = "hide_button"
+            self.render("signup.html", **html_values)
         
     def post(self):
         has_error = False
@@ -205,25 +251,26 @@ class SignUpPage(Handler):
         self.verify_password = self.request.get("verify")
         self.email = self.request.get("email")
 
-        params = dict(username = self.username, email = self.email)
-
         if not validate_username(self.username):
-            params['error_username'] = "Please enter a valid username." 
+            html_values['error_username'] = "Please enter a valid username." 
             has_error = True
         
         if not validate_password(self.password):
-            params['error_password'] = "Please enter a valid password."
+            html_values['error_password'] = "Please enter a valid password."
             has_error = True
         elif self.password != self.verify_password:
-            params['error_verify'] = "Your passwords do not match."
+            html_values['error_verify'] = "Your passwords do not match."
             has_error = True
         
         if not validate_email(self.email):
-            params['error_email'] = "Please enter a valid email."
+            html_values['error_email'] = "Please enter a valid email."
             has_error = True
 
         if has_error:
-            self.render('signup.html', **params)
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = "hide_button"
+            self.render('signup.html', **html_values)
         else:
             self.done()
 
@@ -239,14 +286,20 @@ class Register(SignUpPage):
         else:
             u = User.register(self.username, self.password, self.email) # Add user to database
             u.put()
-            
+
             self.login(u)
             self.redirect('/welcome')
 
 # Login
 class Login(Handler):
     def get(self):
-        self.render("login.html")
+        if self.user:
+            self.redirect('/')
+        else:
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = ""
+            html_values['display_logout'] = "hide_button"
+            self.render("login.html", **html_values)
 
     def post(self):
         username = self.request.get('username')
@@ -264,12 +317,21 @@ class Login(Handler):
 class Logout(Handler):
     def get(self):
         self.logout() # Erase cookies
-        self.redirect('/signup')
+        html_values['display_logout'] = "hide_button"
+        html_values['display_login'] = ""
+        html_values['display_signup'] = ""
+        self.render('logout.html', **html_values)
 
 class Welcome(Handler):
     def get(self):
+        display_login = ""
+        display_signup = ""
+
         if self.user:
-            self.render('welcome.html', username = self.user.name)
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = "hide_button"
+            html_values['display_logout'] = ""
+            self.render('welcome.html', username = self.user.name, **html_values)
         else:
             self.redirect('/signup')
 
