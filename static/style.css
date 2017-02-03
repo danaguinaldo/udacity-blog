@@ -63,3 +63,13 @@ a:hover, a:link, a:visited, a:active {
     padding-left: 5px;
     color: red;
 }
+
+.like-button {
+    border: none;
+    text-decoration: none;
+    background-color: white;
+}
+
+.like-button:hover {
+    text-decoration: underline;
+}

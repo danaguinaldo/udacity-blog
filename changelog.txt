@@ -1,0 +1,12 @@
+1/30/2016
+- Edited "main.py" to properly display buttons depending if a user is logged in or not
+
+Need to do:
+- PEP8
+- Comments (Only signed in users)
+- Likes (One like from user per post)
+- Edit (Only author)
+- Delete Post (CRUD functionality, Only author)
+- Fix "README.md"
+- Only logged in users can Edit, Delete, Create, or like/Comment 
+- Logged out users are redirected to the login page

@@ -95,9 +95,8 @@ def validate_email(email):
     return email and EMAIL_RE.match(email)
 
 # DATABASE
+
 # Key to find users
-
-
 def users_key(group = 'default'):
     return db.Key.from_path('users', group)
 
@@ -145,6 +144,14 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
 
+def comment_key(name='default'):
+    return db.Key.from_path('comments', name)
+
+class Comments(db.Model):
+    comment = db.StringProperty()
+    comment_author = db.StringProperty()
+    original_post = db.StringProperty()
+
 # Handler for EVERYTHING
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
@@ -190,7 +197,7 @@ class MainPage(Handler):
             html_values['display_signup'] = ""
             html_values['display_logout'] = "hide_button"
 
-        self.render('blog.html', posts = posts, **html_values)
+        self.render('blog.html', posts=posts, **html_values)
 
 # Posting a new blog
 class NewPost(Handler):
@@ -201,25 +208,32 @@ class NewPost(Handler):
             html_values['display_logout'] = ""
             self.render("new_post.html", **html_values)
         else:
-            self.redirect('/signup')
+            self.redirect('/login')
 
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')
         if self.user:
-            username = self.user.name
-        else:
-            username = "Anonymous"
+            if subject and content:
+                p = post.Post(
+                    parent=blog_key(),
+                    subject=subject,
+                    content=content,
+                    author=username,
+                    can_edit=username)
 
-        if subject and content:
-            p = Post(parent=blog_key(), subject=subject, content=content, author=username, can_edit=username)
-            p.put()
-            p.link = str(p.key().id())
-            p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+                p.put()
+                p.link = str(p.key().id())
+                p.put()
+                self.redirect('/blog/%s' % str(p.key().id()))
+            else:
+                html_values['display_logout'] = ""
+                html_values['display_login'] = "hide_button"
+                html_values['display_signup'] = "hide_button"
+                html_values['error'] = "subject and content, please!"
+                self.render("new_post.html", **html_values)
         else:
-            error = "subject and content, please!"
-            self.render("new_post.html", subject=subject, content=content, error=error)
+                self.redirect('/login')
 
 # Separate page for the blog post
 class PostPage(Handler):
@@ -231,7 +245,18 @@ class PostPage(Handler):
             self.error(404)
             return
 
-        self.render("permalink.html", post = post)
+        if self.user:
+            html_values['display_logout'] = ""
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = "hide_button"
+        else:
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = ""
+
+        html_values['post'] = post
+
+        self.render("permalink.html", **html_values)
 
 # Page to register
 class SignUpPage(Handler):
@@ -243,7 +268,7 @@ class SignUpPage(Handler):
             html_values['display_login'] = ""
             html_values['display_signup'] = "hide_button"
             self.render("signup.html", **html_values)
-        
+
     def post(self):
         has_error = False
         self.username = self.request.get("username")
@@ -252,16 +277,16 @@ class SignUpPage(Handler):
         self.email = self.request.get("email")
 
         if not validate_username(self.username):
-            html_values['error_username'] = "Please enter a valid username." 
+            html_values['error_username'] = "Please enter a valid username."
             has_error = True
-        
+
         if not validate_password(self.password):
             html_values['error_password'] = "Please enter a valid password."
             has_error = True
         elif self.password != self.verify_password:
             html_values['error_verify'] = "Your passwords do not match."
             has_error = True
-        
+
         if not validate_email(self.email):
             html_values['error_email'] = "Please enter a valid email."
             has_error = True
@@ -281,8 +306,11 @@ class Register(SignUpPage):
     def done(self):
         u = User.by_name(self.username)
         if u:
-            message = "That username already exists."
-            self.render('signup.html', error_username = message)
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = "hide_button"
+            html_values['error_username'] = "That username already exists."
+            self.render('signup.html', **html_values)
         else:
             u = User.register(self.username, self.password, self.email) # Add user to database
             u.put()
@@ -308,19 +336,22 @@ class Login(Handler):
         u = User.login(username, password) # If name and pw are together in database
         if u:
             self.login(u) # set cookies
-            self.redirect('/welcome') 
+            self.redirect('/welcome')
         else:
             message = "Invalid login"
-            self.render('login.html', error_username = message)
+            self.render('login.html', error_username=message)
 
 # Logout
 class Logout(Handler):
     def get(self):
-        self.logout() # Erase cookies
-        html_values['display_logout'] = "hide_button"
-        html_values['display_login'] = ""
-        html_values['display_signup'] = ""
-        self.render('logout.html', **html_values)
+        if self.user:
+            self.logout() # Erase cookies
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = ""
+            self.render('logout.html', **html_values)
+        else:
+            self.redirect('/signup')
 
 class Welcome(Handler):
     def get(self):
@@ -331,7 +362,7 @@ class Welcome(Handler):
             html_values['display_login'] = "hide_button"
             html_values['display_signup'] = "hide_button"
             html_values['display_logout'] = ""
-            self.render('welcome.html', username = self.user.name, **html_values)
+            self.render('welcome.html', username=self.user.name, **html_values)
         else:
             self.redirect('/signup')
 

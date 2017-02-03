@@ -1,8 +1,9 @@
-<a href="/blog/{{p.link}}">
-  <div class="post">
+
+<div class="post">
+  <a href="/blog/{{p.link}}">
     <div class="post-heading">
       <div class="post-title col-xs-6 col-sm-6 col-md-10 col-lg-10">
-        {{p.subject}}
+        {{p.subject}} <em>by {{p.author}}</em>
       </div>
       <div class="post-date col-xs-6 col-sm-6 col-md-2 col-lg-2">
         {{p.created.strftime("%b %d, %Y")}}
@@ -13,8 +14,14 @@
       {{p._render_text | safe}}
     </div>
     <hr>
-    <div class="post-author">
-      - {{p.author}}
+  </a>
+    <div class="row">
+      <div class="col-md-10 col-lg-10 col-xs-0 col-sm-0"></div>
+      <div class="col-md-1 col-lg-1 col-sm-6 col-xs-6 comment">
+        comment
+      </div>
+      <div class="col-md-1 col-lg-1 col-sm-6 col-xs-6 like">
+        <button class="like-button">like</button>
+      </div>
     </div>
-  </div>
-</a>
+</div>
