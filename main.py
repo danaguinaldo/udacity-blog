@@ -30,7 +30,11 @@ jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     autoescape=True)
 
+<<<<<<< HEAD
+html_values = dict(display_login="", display_signup="", display_logout="", display_post="")
+=======
 html_values = dict(display_login="", display_signup="", display_logout="")
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 
 # GLOBAL FUNCTIONS
 # Hashing Values
@@ -192,10 +196,18 @@ class MainPage(Handler):
             html_values['display_login'] = "hide_button"
             html_values['display_signup'] = "hide_button"
             html_values['display_logout'] = ""
+<<<<<<< HEAD
+            html_values['display_post'] = ""
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
         else:
             html_values['display_login'] = ""
             html_values['display_signup'] = ""
             html_values['display_logout'] = "hide_button"
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 
         self.render('blog.html', posts=posts, **html_values)
 
@@ -206,6 +218,10 @@ class NewPost(Handler):
             html_values['display_login'] = "hide_button"
             html_values['display_signup'] = "hide_button"
             html_values['display_logout'] = ""
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render("new_post.html", **html_values)
         else:
             self.redirect('/login')
@@ -215,12 +231,21 @@ class NewPost(Handler):
         content = self.request.get('content')
         if self.user:
             if subject and content:
+<<<<<<< HEAD
+                p = Post(
+                    parent=blog_key(),
+                    subject=subject,
+                    content=content,
+                    author=self.user.name,
+                    can_edit=self.user.name)
+=======
                 p = post.Post(
                     parent=blog_key(),
                     subject=subject,
                     content=content,
                     author=username,
                     can_edit=username)
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 
                 p.put()
                 p.link = str(p.key().id())
@@ -230,6 +255,10 @@ class NewPost(Handler):
                 html_values['display_logout'] = ""
                 html_values['display_login'] = "hide_button"
                 html_values['display_signup'] = "hide_button"
+<<<<<<< HEAD
+                html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
                 html_values['error'] = "subject and content, please!"
                 self.render("new_post.html", **html_values)
         else:
@@ -241,10 +270,25 @@ class PostPage(Handler):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
-        if not post:
-            self.error(404)
-            return
+        if self.user:
+            html_values['display_logout'] = ""
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = "hide_button"
+            html_values['display_post'] = ""
+        else:
+            html_values['display_logout'] = "hide_button"
+            html_values['display_login'] = ""
+            html_values['display_signup'] = ""
+            html_values['display_post'] = "hide_button"
 
+        if not post:
+            self.render("post_error.html", **html)
+            return
+        
+        html_values['post'] = post
+
+<<<<<<< HEAD
+=======
         if self.user:
             html_values['display_logout'] = ""
             html_values['display_login'] = "hide_button"
@@ -256,6 +300,7 @@ class PostPage(Handler):
 
         html_values['post'] = post
 
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
         self.render("permalink.html", **html_values)
 
 # Page to register
@@ -267,6 +312,10 @@ class SignUpPage(Handler):
             html_values['display_logout'] = "hide_button"
             html_values['display_login'] = ""
             html_values['display_signup'] = "hide_button"
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render("signup.html", **html_values)
 
     def post(self):
@@ -295,6 +344,10 @@ class SignUpPage(Handler):
             html_values['display_logout'] = "hide_button"
             html_values['display_login'] = ""
             html_values['display_signup'] = "hide_button"
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render('signup.html', **html_values)
         else:
             self.done()
@@ -309,6 +362,10 @@ class Register(SignUpPage):
             html_values['display_logout'] = "hide_button"
             html_values['display_login'] = ""
             html_values['display_signup'] = "hide_button"
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             html_values['error_username'] = "That username already exists."
             self.render('signup.html', **html_values)
         else:
@@ -327,6 +384,10 @@ class Login(Handler):
             html_values['display_login'] = "hide_button"
             html_values['display_signup'] = ""
             html_values['display_logout'] = "hide_button"
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render("login.html", **html_values)
 
     def post(self):
@@ -338,8 +399,17 @@ class Login(Handler):
             self.login(u) # set cookies
             self.redirect('/welcome')
         else:
+<<<<<<< HEAD
+            html_values['display_login'] = "hide_button"
+            html_values['display_signup'] = ""
+            html_values['display_logout'] = "hide_button"
+            html_values['display_post'] = "hide_button"
+            html_values['error_username'] = "Invalid Login"
+            self.render('login.html', **html_values)
+=======
             message = "Invalid login"
             self.render('login.html', error_username=message)
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 
 # Logout
 class Logout(Handler):
@@ -349,6 +419,10 @@ class Logout(Handler):
             html_values['display_logout'] = "hide_button"
             html_values['display_login'] = ""
             html_values['display_signup'] = ""
+<<<<<<< HEAD
+            html_values['display_post'] = "hide_button"
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render('logout.html', **html_values)
         else:
             self.redirect('/signup')
@@ -362,13 +436,17 @@ class Welcome(Handler):
             html_values['display_login'] = "hide_button"
             html_values['display_signup'] = "hide_button"
             html_values['display_logout'] = ""
+<<<<<<< HEAD
+            html_values['display_post'] = ""
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
             self.render('welcome.html', username=self.user.name, **html_values)
         else:
             self.redirect('/signup')
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/blog/newpost', NewPost),
+    ('/newpost', NewPost),
     ('/blog/([0-9]+)', PostPage),
     ('/signup', Register),
     ('/welcome', Welcome),

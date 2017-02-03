@@ -8,5 +8,9 @@ Need to do:
 - Edit (Only author)
 - Delete Post (CRUD functionality, Only author)
 - Fix "README.md"
+<<<<<<< HEAD
+- Only logged in users can Edit, Delete, Create, or like/Comment 
+=======
 - Only logged in users can Edit, Delete, Create, or like/Comment 
 - Logged out users are redirected to the login page
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989

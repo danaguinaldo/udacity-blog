@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+body {
+    background-color:#fcfdff;
+}
+
+=======
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 .title, .buttons {
     text-align: center;
 }
@@ -64,6 +71,20 @@ a:hover, a:link, a:visited, a:active {
     color: red;
 }
 
+<<<<<<< HEAD
+.post-button {
+    border: none;
+    text-decoration: none;
+    background-color: #fcfdff;
+}
+
+.post-button:hover {
+    text-decoration: underline;
+}
+
+.post_error {
+    text-align: center;
+=======
 .like-button {
     border: none;
     text-decoration: none;
@@ -72,4 +93,5 @@ a:hover, a:link, a:visited, a:active {
 
 .like-button:hover {
     text-decoration: underline;
+>>>>>>> e356007e4c3243b42702ba85499d964601faa989
 }
